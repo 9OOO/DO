@@ -1,5 +1,23 @@
 #cloud-config
-
+groups:
+  - ubuntu: [root,sys]
+# Add users to the system. Users are added after groups are added.
 users:
-  - name: click14
-  - name: click88
+  - default
+  - name: lesha
+    gecos: lesha
+    shell: /bin/bash
+    primary_group: lesha
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin, docker
+    lock_passwd: false
+    ssh_authorized_keys:
+      - ssh-rsa PLACE YOUR PUBLIC KEY HERE
+runcmd:
+- sudo apt-get -y update
+- sudo apt -y install apt-transport-https ca-certificates curl software-properties-common net-tools
+- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+- sudo apt -y update
+- sudo apt-cache policy docker-ce && apt-get -y install docker-ce
+- sudo usermod -aG docker lesha
